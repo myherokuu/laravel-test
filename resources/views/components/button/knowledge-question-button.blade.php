@@ -1,0 +1,1 @@
+<button class="w-full rounded-lg border border-[#6366F1] bg-white px-3 py-2 text-left text-xs text-[#6366F1]">Q: {{ $slot }}</button>

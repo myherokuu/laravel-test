@@ -1,0 +1,50 @@
+{
+  "id": "WF-E9270F00",
+  "name": "Welcome → Login → Dashboard → Logout",
+  "description": "",
+  "base_url": "http://localhost:9998/",
+  "created_at": "2026-09-17T23:24:00.797251Z",
+  "updated_at": "2026-09-18T05:02:45.355990Z",
+  "steps": [
+    {
+      "action": "click_text",
+      "selector": "",
+      "value": "Log in",
+      "description": "",
+      "checklist": "Welcome page links to login",
+      "expect_text": "LOG IN"
+    },
+    {
+      "action": "type",
+      "selector": "#email",
+      "value": "smh@prokhas.com.my",
+      "description": "",
+      "checklist": "Email can be entered",
+      "expect_text": ""
+    },
+    {
+      "action": "type",
+      "selector": "#password",
+      "value": "abcd1234",
+      "description": "",
+      "checklist": "Password can be entered",
+      "expect_text": ""
+    },
+    {
+      "action": "click_text",
+      "selector": "",
+      "value": "LOG IN",
+      "description": "",
+      "checklist": "Valid credentials sign the user in",
+      "expect_text": "Log Keluar"
+    },
+    {
+      "action": "click_text",
+      "selector": "",
+      "value": "Log Keluar",
+      "description": "",
+      "checklist": "Logged-in user can sign out",
+      "expect_text": "Log in"
+    }
+  ]
+}

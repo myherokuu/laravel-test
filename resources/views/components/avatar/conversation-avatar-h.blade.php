@@ -1,0 +1,1 @@
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-[#1E293B] text-sm">H</div>

@@ -1,0 +1,1 @@
+<aside class="bg-white rounded-2xl shadow p-4 flex flex-col gap-4">{{ $slot }}</aside>

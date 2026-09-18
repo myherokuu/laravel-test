@@ -1,0 +1,1 @@
+<div class="flex flex-col gap-3 overflow-y-auto p-4 bg-white">{{ $slot }}</div>

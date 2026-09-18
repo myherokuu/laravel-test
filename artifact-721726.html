@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Prokhas AI — Online Chat</title>
+<meta name="color-scheme" content="light"/>
+<style>
+  :root{
+    --primary:#6366F1;
+    --primary-600:#5B5CF6;
+    --secondary:#7C3AED;
+    --bg:#F1F5F9;
+    --card:#FFFFFF;
+    --text:#1E293B;
+    --muted:#64748B;
+    --faint:#94A3B8;
+    --line:#E2E8F0;
+    --line-2:#EEF2F7;
+    --success:#16A34A;
+    --danger:#EF4444;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-system, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; -webkit-font-smoothing:antialiased; font-synthesis:none}
+  a{color:inherit; text-decoration:none}
+  button{font:inherit}
+  /* Header */
+  .hdr{
+    height:62px; width:100%;
+    background: linear-gradient(90deg, #6366F1 0%, #6B5BF0 45%, #7C3AED 100%);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 18px; gap:16px;
+    position:sticky; top:0; z-index:20;
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+  .brand{display:flex; align-items:center; gap:10px; color:#fff; font-weight:800; letter-spacing:-0.02em; font-size:19px; white-space:nowrap}
+  .brand-mark{width:32px; height:32px; border-radius:9px; background:rgba(255,255,255,0.18); display:grid; place-items:center; border:1px solid rgba(255,255,255,0.22); backdrop-filter: blur(6px)}
+  .brand-mark svg{width:18px; height:18px; fill:#fff}
+  .nav{flex:1; display:flex; justify-content:center; gap:8px; min-width:0}
+  .pill{
+    padding:7px 14px; border-radius:999px; font-size:13px; font-weight:550; line-height:1;
+    border:1px solid rgba(255,255,255,0.92); color:#fff; background:transparent;
+    cursor:pointer; white-space:nowrap; transition:.15s; letter-spacing:0.01em;
+  }
+  .pill:hover{background:rgba(255,255,255,0.16)}
+  .pill.active{background:#fff; color:#5B46DF; border-color:#fff; box-shadow:0 1px 6px rgba(0,0,0,0.12)}
+  .hdr-right{display:flex; align-items:center; gap:10px; flex-shrink:0}
+  .user-chip{display:flex; align-items:center; gap:8px; color:#fff; font-size:12px; font-weight:600}
+  .ava{width:32px; height:32px; border-radius:999px; background:#FFD9A6; border:2px solid rgba(255,255,255,0.9); display:grid; place-items:center; font-weight:800; font-size:11px; color:#7C2D12; overflow:hidden}
+  .ava img{width:100%; height:100%; object-fit:cover}
+  .btn-white{padding:7px 14px; border-radius:999px; border:1px solid rgba(255,255,255,0.95); background:transparent; color:#fff; font-size:13px; font-weight:600; cursor:pointer}
+  .btn-white:hover{background:rgba(255,255,255,0.16)}
+  .btn-logout{padding:7px 16px; border-radius:999px; border:1px solid #EF4444; background:#EF4444; color:#fff; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(239,68,68,0.35)}
+  .btn-logout:hover{background:#DC2626; border-color:#DC2626}
+  .mobile-menu{display:none; width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); color:#fff; display:none; place-items:center; cursor:pointer}
+
+  /* Layout */
+  .shell{max-width:1440px; margin:0 auto; padding:18px 18px 28px; display:grid; grid-template-columns: 300px 1fr 360px; gap:18px; align-items:start}
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.04); overflow:hidden}
+  .panel.pad{padding:0}
+  /* Left */
+  .left-head{padding:16px 16px 14px; border-bottom:1px solid var(--line-2)}
+  .tabs{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .tab{padding:9px 10px; border-radius:10px; font-size:13px; font-weight:650; text-align:center; cursor:pointer; border:1px solid transparent; transition:.15s}
+  .tab.active{background: linear-gradient(90deg, #6366F1, #7C3AED); color:#fff; box-shadow:0 4px 12px rgba(99,102,241,0.35); border-color:transparent}
+  .tab.idle{background:#fff; color:#6366F1; border-color:#C7D2FE}
+  .tab.idle:hover{background:#EEF2FF; border-color:#A5B4FC}
+  .search-wrap{position:relative; margin-top:12px}
+  .search-wrap input{width:100%; background:#F8FAFC; border:1px solid var(--line); border-radius:10px; padding:10px 12px 10px 36px; font-size:13px; color:var(--text); outline:none}
+  .search-wrap input::placeholder{color:#94A3B8}
+  .search-wrap input:focus{border-color:#A5B4FC; box-shadow:0 0 0 3px rgba(99,102,241,0.15); background:#fff}
+  .search-wrap .ico{position:absolute; left:11px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:#94A3B8}
+  .conv-list{padding:12px 12px 14px; display:flex; flex-direction:column; gap:8px; min-height:420px}
+  .conv-item{display:flex; align-items:center; gap:10px; padding:10px 10px; border-radius:12px; border:1px solid var(--line-2); background:#F8FAFC; cursor:pointer; transition:.15s}
+  .conv-item.selected{background: linear-gradient(90deg, #6366F1 0%, #7C3AED 100%); border-color:transparent; box-shadow:0 6px 16px rgba(99,102,241,0.28)}
+  .conv-item.selected .conv-name,.conv-item.selected .conv-sub{color:#fff}
+  .conv-item.selected .icon-btn{color:rgba(255,255,255,0.92); border-color:rgba(255,255,255,0.35)}
+  .conv-item.selected .icon-btn:hover{background:rgba(255,255,255,0.18); color:#fff}
+  .conv-item:hover:not(.selected){background:#fff; border-color:#E2E8F0; box-shadow:0 2px 8px rgba(15,23,42,0.05)}
+  .conv-ava{width:38px; height:38px; border-radius:999px; background:#EDE9FE; border:1px solid #DDD6FE; display:grid; place-items:center; font-weight:800; font-size:14px; color:#6D28D9; flex-shrink:0}
+  .conv-meta{flex:1; min-width:0}
+  .conv-name{font-size:13px; font-weight:650; color:var(--text); line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .conv-sub{font-size:11.5px; color:var(--faint); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .conv-actions{display:flex; gap:6px}
+  .icon-btn{width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:transparent; display:grid; place-items:center; cursor:pointer; color:var(--muted); transition:.15s}
+  .icon-btn:hover{background:#F1F5F9; color:var(--text)}
+  .icon-btn.danger:hover{background:#FEF2F2; color:#EF4444; border-color:#FECACA}
+  .left-foot{padding:10px 16px; border-top:1px solid var(--line-2); display:flex; gap:8px}
+  .btn-ghost{flex:1; padding:8px 10px; border-radius:10px; border:1px dashed #CBD5E1; background:#F8FAFC; color:#475569; font-size:12.5px; font-weight:600; cursor:pointer}
+  .btn-ghost:hover{background:#fff}
+  /* Center */
+  .center-head{padding:18px 20px 14px; border-bottom:1px solid var(--line-2); display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+  .h-title{font-size:17px; font-weight:750; letter-spacing:-0.015em; color:var(--text); display:flex; align-items:center; gap:8px; line-height:1.2}
+  .h-title .emoji{width:28px; height:28px; border-radius:8px; background:#EEF2FF; border:1px solid #E0E7FF; display:grid; place-items:center; font-size:15px}
+  .h-sub{font-size:12.5px; color:var(--faint); margin-top:4px}
+  .center-actions{display:flex; gap:6px}
+  .mini-btn{padding:7px 10px; border-radius:9px; border:1px solid var(--line); background:#fff; color:#475569; font-size:12px; font-weight:600; cursor:pointer}
+  .mini-btn:hover{background:#F8FAFC}
+  .thread{padding:18px 18px 10px; background:#fff; max-height:560px; overflow:auto; scroll-behavior:smooth}
+  .day-sep{display:grid; place-items:center; margin:6px 0 10px}
+  .day-sep span{font-size:11px; color:#94A3B8; background:#F8FAFC; border:1px solid var(--line-2); padding:4px 10px; border-radius:999px}
+  .msg{max-width:78%; padding:12px 14px; border-radius:16px; position:relative; box-shadow:0 1px 2px rgba(15,23,42,0.04)}
+  .msg.user{align-self:flex-end; background: linear-gradient(135deg, #6366F1 0%, #7C3AED 100%); color:#fff; border-bottom-right-radius:6px}
+  .msg.bot{align-self:flex-start; background:#F8FAFC; border:1px solid #F1F5F9; color:#334155; border-bottom-left-radius:6px}
+  .msg-head{display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:11px; font-weight:700; letter-spacing:0.02em; text-transform:uppercase}
+  .msg.user .msg-head{color:rgba(255,255,255,0.92)}
+  .msg.bot .msg-head{color:#6366F1}
+  .msg-head .who{font-size:11.5px; text-transform:none; letter-spacing:0}
+  .msg-head .time{margin-left:auto; font-weight:600; font-size:11px; opacity:0.75; text-transform:none; letter-spacing:0}
+  .msg.user .time{color:rgba(255,255,255,0.92)}
+  .msg.bot .time{color:var(--faint)}
+  .msg p{margin:0; font-size:13.5px; line-height:1.55; font-weight:450}
+  .msg.user p{color:#fff}
+  .msg.bot p{color:#334155}
+  .msg.bot p + p{margin-top:8px}
+  .feedback{display:flex; gap:10px; margin-top:10px}
+  .fb{width:26px; height:26px; border-radius:8px; border:1px solid #E2E8F0; background:#fff; display:grid; place-items:center; cursor:pointer; color:#94A3B8; transition:.15s}
+  .fb:hover{border-color:#C7D2FE; color:#6366F1; background:#EEF2FF}
+  .fb.active{background:#6366F1; border-color:#6366F1; color:#fff}
+  .bubble-row{display:flex; flex-direction:column; gap:12px}
+  .composer{padding:12px 14px; border-top:1px solid var(--line-2); background:#F8FAFC; display:flex; flex-direction:column; gap:10px}
+  .composer-row{display:flex; gap:8px; align-items:center}
+  .composer input{flex:1; background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-size:13px; outline:none}
+  .composer input:focus{border-color:#A5B4FC; box-shadow:0 0 0 3px rgba(99,102,241,0.15)}
+  .send{padding:11px 16px; border-radius:12px; border:1px solid #6366F1; background: linear-gradient(90deg, #6366F1, #7C3AED); color:#fff; font-weight:700; font-size:13px; cursor:pointer; box-shadow:0 4px 12px rgba(99,102,241,0.3)}
+  .send:hover{filter:brightness(1.05)}
+  .readonly{font-size:12px; color:var(--faint); text-align:center; padding:8px 0 2px}
+  /* Right */
+  .right-head{padding:18px 16px 12px; border-bottom:1px solid var(--line-2)}
+  .k-title{font-size:16px; font-weight:750; letter-spacing:-0.015em; display:flex; align-items:center; gap:8px}
+  .k-title .emoji{width:28px; height:28px; border-radius:8px; background:#FEF3C7; border:1px solid #FDE68A; display:grid; place-items:center; font-size:14px}
+  .k-sub{font-size:12px; color:var(--faint); margin-top:4px; line-height:1.4}
+  .k-search{display:flex; gap:8px; margin-top:12px}
+  .k-search input{flex:1; background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 12px; font-size:13px; outline:none}
+  .k-search input:focus{border-color:#A5B4FC; box-shadow:0 0 0 3px rgba(99,102,241,0.12)}
+  .k-search button{padding:9px 14px; border-radius:10px; border:1px solid var(--line); background:#fff; color:#334155; font-weight:650; font-size:13px; cursor:pointer}
+  .k-search button:hover{background:#F8FAFC}
+  .k-list{padding:12px 12px 14px; display:flex; flex-direction:column; gap:12px; max-height:620px; overflow:auto}
+  .k-card{background:#F8FAFC; border:1px solid var(--line-2); border-radius:14px; padding:12px 12px 12px; transition:.15s}
+  .k-card:hover{background:#fff; border-color:#E2E8F0; box-shadow:0 4px 16px rgba(15,23,42,0.06); transform:translateY(-1px)}
+  .k-card-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
+  .k-card-title{font-size:13px; font-weight:700; color:var(--text); line-height:1.3}
+  .badge-on{background:#22C55E; color:#fff; font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; padding:4px 8px; border-radius:999px; flex-shrink:0}
+  .badge-dept{margin-top:6px; display:inline-flex; padding:4px 8px; border-radius:999px; background:#1E293B; color:#fff; font-size:11px; font-weight:650; letter-spacing:0.02em}
+  .q-btn{margin-top:10px; width:100%; background:#fff; border:1px solid #A5B4FC; color:#4F46E5; font-size:12.5px; font-weight:650; padding:9px 10px; border-radius:10px; cursor:pointer; text-align:center; transition:.15s}
+  .q-btn:hover{background:#EEF2FF; border-color:#6366F1}
+  .k-desc{margin-top:8px; font-size:12.5px; line-height:1.5; color:#64748B}
+  .empty{padding:18px; text-align:center; color:var(--faint); font-size:13px; border:1px dashed #CBD5E1; border-radius:12px; background:#F8FAFC}
+  /* Toast */
+  .toast{position:fixed; right:16px; bottom:16px; background:#0F172A; color:#fff; padding:10px 14px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:0 8px 24px rgba(2,6,23,0.25); transform:translateY(8px); opacity:0; pointer-events:none; transition:.2s; z-index:50}
+  .toast.show{transform:translateY(0); opacity:1}
+  /* Responsive */
+  @media (max-width: 1160px){
+    .page-shell.active{grid-template-columns: 280px 1fr; }
+    .panel.right{grid-column:1 / -1}
+    .k-list{max-height:none}
+  }
+  @media (max-width: 760px){
+    .hdr{padding:0 12px}
+    .nav{display:none}
+    .mobile-menu{display:grid}
+    .hdr-right .user-chip span, .hdr-right .btn-white{display:none}
+    .page-shell.active{grid-template-columns:1fr; padding:12px}
+    .thread{max-height:none}
+    .msg{max-width:88%}
+  }
+  /* scrollbar */
+  .thread::-webkit-scrollbar, .k-list::-webkit-scrollbar, .conv-list::-webkit-scrollbar{width:6px; height:6px}
+  .thread::-webkit-scrollbar-thumb, .k-list::-webkit-scrollbar-thumb{background:#CBD5E1; border-radius:999px}
+  /* Pages */
+  .page{display:none; max-width:1440px; margin:0 auto; padding:18px 18px 28px}
+  .page.active{display:block}
+  .page-shell{display:none; max-width:1440px; margin:0 auto; padding:18px 18px 28px; grid-template-columns:300px 1fr 360px; gap:18px; align-items:start}
+  .page-shell.active{display:grid}
+  /* Dashboard */
+  .dash-welcome{background:linear-gradient(135deg,#6366F1 0%,#7C3AED 100%); border-radius:var(--radius-lg); padding:28px 28px 24px; color:#fff; margin-bottom:18px; box-shadow:0 8px 24px rgba(99,102,241,0.25)}
+  .dash-welcome h2{margin:0; font-size:22px; font-weight:800; letter-spacing:-0.02em}
+  .dash-welcome p{margin:6px 0 0; font-size:14px; opacity:0.88; font-weight:450}
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px}
+  .stat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md); padding:18px 16px; box-shadow:0 1px 2px rgba(15,23,42,0.04)}
+  .stat-card .stat-icon{width:38px; height:38px; border-radius:10px; display:grid; place-items:center; font-size:18px; margin-bottom:10px}
+  .stat-card .stat-icon.purple{background:#EEF2FF; border:1px solid #E0E7FF}
+  .stat-card .stat-icon.green{background:#F0FDF4; border:1px solid #BBF7D0}
+  .stat-card .stat-icon.amber{background:#FFFBEB; border:1px solid #FDE68A}
+  .stat-card .stat-icon.rose{background:#FFF1F2; border:1px solid #FECDD3}
+  .stat-val{font-size:26px; font-weight:800; color:var(--text); letter-spacing:-0.02em}
+  .stat-label{font-size:12px; color:var(--muted); font-weight:600; margin-top:2px}
+  .stat-change{font-size:11px; font-weight:700; margin-top:6px; display:inline-flex; padding:2px 8px; border-radius:999px}
+  .stat-change.up{background:#F0FDF4; color:#16A34A}
+  .stat-change.down{background:#FEF2F2; color:#EF4444}
+  .dash-row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .dash-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,0.04)}
+  .dash-card-head{padding:16px 18px 12px; border-bottom:1px solid var(--line-2); display:flex; align-items:center; justify-content:space-between}
+  .dash-card-head h3{margin:0; font-size:15px; font-weight:750; letter-spacing:-0.01em}
+  .dash-card-body{padding:14px 18px 18px}
+  .activity-item{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line-2)}
+  .activity-item:last-child{border-bottom:none}
+  .activity-dot{width:10px; height:10px; border-radius:999px; flex-shrink:0}
+  .activity-dot.info{background:#6366F1}
+  .activity-dot.success{background:#16A34A}
+  .activity-dot.warn{background:#F59E0B}
+  .activity-text{flex:1; font-size:13px; color:var(--text); line-height:1.4}
+  .activity-text b{font-weight:700}
+  .activity-time{font-size:11px; color:var(--faint); white-space:nowrap}
+  .quick-link{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; border:1px solid var(--line-2); background:#F8FAFC; cursor:pointer; transition:.15s; margin-bottom:8px}
+  .quick-link:last-child{margin-bottom:0}
+  .quick-link:hover{background:#fff; border-color:#E2E8F0; box-shadow:0 2px 8px rgba(15,23,42,0.05)}
+  .quick-link-icon{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; font-size:17px; flex-shrink:0}
+  .quick-link-icon.ql-purple{background:#EEF2FF; border:1px solid #E0E7FF}
+  .quick-link-icon.ql-green{background:#F0FDF4; border:1px solid #BBF7D0}
+  .quick-link-icon.ql-amber{background:#FFFBEB; border:1px solid #FDE68A}
+  .quick-link-text{flex:1}
+  .quick-link-text .ql-title{font-size:13px; font-weight:700; color:var(--text)}
+  .quick-link-text .ql-sub{font-size:11.5px; color:var(--faint); margin-top:1px}
+  .quick-link-arrow{color:var(--faint); font-size:16px}
+  @media (max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr)}.dash-row{grid-template-columns:1fr}}
+  @media (max-width:500px){.stat-grid{grid-template-columns:1fr}}
+  /* Knowledge Items page */
+  .ki-header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap}
+  .ki-header h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px}
+  .ki-header h2 .emoji{width:32px; height:32px; border-radius:10px; background:#FEF3C7; border:1px solid #FDE68A; display:grid; place-items:center; font-size:17px}
+  .ki-actions{display:flex; gap:8px}
+  .ki-btn{padding:9px 16px; border-radius:10px; font-size:13px; font-weight:650; cursor:pointer; transition:.15s; border:1px solid var(--line); background:#fff; color:var(--text)}
+  .ki-btn:hover{background:#F8FAFC}
+  .ki-btn.primary{background:linear-gradient(90deg,#6366F1,#7C3AED); color:#fff; border-color:transparent; box-shadow:0 4px 12px rgba(99,102,241,0.3)}
+  .ki-btn.primary:hover{filter:brightness(1.05)}
+  .ki-filters{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center}
+  .ki-filter{padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:650; border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer; transition:.15s}
+  .ki-filter:hover{border-color:#A5B4FC; color:#6366F1}
+  .ki-filter.active{background:#6366F1; color:#fff; border-color:#6366F1}
+  .ki-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:14px}
+  .ki-item{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; transition:.15s; cursor:pointer}
+  .ki-item:hover{border-color:#E2E8F0; box-shadow:0 4px 16px rgba(15,23,42,0.06); transform:translateY(-1px)}
+  .ki-item-top{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
+  .ki-item-title{font-size:14px; font-weight:750; color:var(--text); line-height:1.3}
+  .ki-item-dept{margin-top:8px; display:inline-flex; padding:4px 10px; border-radius:999px; background:#1E293B; color:#fff; font-size:11px; font-weight:650}
+  .ki-item-desc{margin-top:10px; font-size:12.5px; line-height:1.5; color:#64748B}
+  .ki-item-footer{margin-top:12px; display:flex; gap:8px; align-items:center}
+  .ki-item-footer .ki-status{font-size:11px; font-weight:700; padding:4px 8px; border-radius:999px}
+  .ki-item-footer .ki-status.on{background:#F0FDF4; color:#16A34A}
+  .ki-item-footer .ki-status.off{background:#FEF2F2; color:#EF4444}
+  .ki-item-footer .ki-date{margin-left:auto; font-size:11px; color:var(--faint)}
+  /* Chatbot page */
+  .cb-header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
+  .cb-header h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px}
+  .cb-header h2 .emoji{width:32px; height:32px; border-radius:10px; background:#EEF2FF; border:1px solid #E0E7FF; display:grid; place-items:center; font-size:17px}
+  .cb-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .cb-panel{background:var(--card); border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; box-shadow:0 1px 2px rgba(15,23,42,0.04)}
+  .cb-panel-head{padding:16px 18px 12px; border-bottom:1px solid var(--line-2); display:flex; align-items:center; gap:10px}
+  .cb-panel-head h3{margin:0; font-size:15px; font-weight:750}
+  .cb-panel-head .cb-icon{width:30px; height:30px; border-radius:8px; display:grid; place-items:center; font-size:15px}
+  .cb-panel-body{padding:16px 18px 18px}
+  .cb-field{margin-bottom:14px}
+  .cb-field:last-child{margin-bottom:0}
+  .cb-field label{display:block; font-size:12px; font-weight:700; color:var(--text); margin-bottom:6px; letter-spacing:0.01em}
+  .cb-field input,.cb-field textarea,.cb-field select{width:100%; background:#F8FAFC; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; color:var(--text); outline:none; font-family:inherit}
+  .cb-field input:focus,.cb-field textarea:focus,.cb-field select:focus{border-color:#A5B4FC; box-shadow:0 0 0 3px rgba(99,102,241,0.12); background:#fff}
+  .cb-field textarea{resize:vertical; min-height:80px}
+  .cb-toggle{display:flex; align-items:center; gap:10px; padding:10px 0}
+  .cb-toggle-switch{width:40px; height:22px; border-radius:11px; background:#CBD5E1; position:relative; cursor:pointer; transition:.2s; flex-shrink:0}
+  .cb-toggle-switch.on{background:#6366F1}
+  .cb-toggle-switch::after{content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:999px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.15); transition:.2s}
+  .cb-toggle-switch.on::after{left:20px}
+  .cb-toggle-label{font-size:13px; color:var(--text); font-weight:550}
+  .cb-toggle-sub{font-size:11.5px; color:var(--faint); margin-top:2px}
+  .cb-stat-row{display:flex; gap:12px; margin-bottom:14px}
+  .cb-stat{flex:1; background:#F8FAFC; border:1px solid var(--line-2); border-radius:10px; padding:12px; text-align:center}
+  .cb-stat .cb-s-val{font-size:22px; font-weight:800; color:var(--text)}
+  .cb-stat .cb-s-label{font-size:11px; color:var(--muted); font-weight:600; margin-top:2px}
+  .cb-save{padding:10px 20px; border-radius:10px; background:linear-gradient(90deg,#6366F1,#7C3AED); color:#fff; font-size:13px; font-weight:700; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(99,102,241,0.3); transition:.15s}
+  .cb-save:hover{filter:brightness(1.05)}
+  @media (max-width:800px){.cb-grid{grid-template-columns:1fr}}
+  /* Notifications page */
+  .nt-header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px}
+  .nt-header h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px}
+  .nt-header h2 .emoji{width:32px; height:32px; border-radius:10px; background:#FEF2F2; border:1px solid #FECDD3; display:grid; place-items:center; font-size:17px}
+  .nt-filters{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap}
+  .nt-filter{padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:650; border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer; transition:.15s}
+  .nt-filter:hover{border-color:#A5B4FC; color:#6366F1}
+  .nt-filter.active{background:#6366F1; color:#fff; border-color:#6366F1}
+  .nt-list{display:flex; flex-direction:column; gap:10px}
+  .nt-item{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; align-items:flex-start; gap:14px; transition:.15s; cursor:pointer}
+  .nt-item:hover{border-color:#E2E8F0; box-shadow:0 2px 8px rgba(15,23,42,0.05)}
+  .nt-item.unread{border-left:3px solid #6366F1; background:#F8FAFF}
+  .nt-icon{width:38px; height:38px; border-radius:10px; display:grid; place-items:center; font-size:17px; flex-shrink:0}
+  .nt-icon.nt-info{background:#EEF2FF; border:1px solid #E0E7FF}
+  .nt-icon.nt-success{background:#F0FDF4; border:1px solid #BBF7D0}
+  .nt-icon.nt-warn{background:#FFFBEB; border:1px solid #FDE68A}
+  .nt-icon.nt-error{background:#FEF2F2; border:1px solid #FECDD3}
+  .nt-content{flex:1; min-width:0}
+  .nt-title{font-size:13px; font-weight:700; color:var(--text); line-height:1.3}
+  .nt-desc{font-size:12.5px; color:#64748B; margin-top:3px; line-height:1.45}
+  .nt-time{font-size:11px; color:var(--faint); white-space:nowrap; flex-shrink:0; margin-top:2px}
+  .nt-badge{font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; margin-left:6px; vertical-align:middle}
+  .nt-badge.new{background:#6366F1; color:#fff}
+  @media (max-width:600px){.ki-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <header class="hdr" role="banner">
+    <div class="brand" aria-label="Prokhas AI">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l7.5 4.3v8.6L12 19.4 4.5 15.1V6.5L12 2.2zm0 2.2L6.2 7.6v6.8L12 17.6l5.8-3.2V7.6L12 4.4zm-2.2 4.6h4.4v1.6h-1.4v4.2H11.2V10.6H9.8V9z"/></svg>
+      </div>
+      Prokhas AI
+    </div>
+    <nav class="nav" aria-label="Primary">
+      <button class="pill" data-nav="dashboard">Dashboard</button>
+      <button class="pill" data-nav="knowledge">Knowledge Items</button>
+      <button class="pill" data-nav="chatbot">Chatbot</button>
+      <button class="pill active" data-nav="online">Online Chat</button>
+      <button class="pill" data-nav="notifications">Notifications</button>
+    </nav>
+    <div class="hdr-right">
+      <div class="user-chip">
+        <div class="ava" title="Super Admin"><img alt="" src="data:image/svg+xml;utf8,<?xml version='1.0'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='32' fill='%23FFD9A6'/><circle cx='32' cy='24' r='12' fill='%237C2D12' opacity='.9'/><path d='M12 58c3-10 12-16 20-16s17 6 20 16' fill='%237C2D12'/></svg>"/></div>
+        <span>Super Admin</span>
+      </div>
+      <button class="btn-white" id="btn-profile">Profile</button>
+      <button class="btn-logout" id="btn-logout">Logout</button>
+      <button class="mobile-menu" id="mobile-menu" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="app-pages">
+    <!-- ============ ONLINE CHAT PAGE ============ -->
+    <div id="page-online" class="page-shell active">
+    <!-- Left -->
+    <section class="panel" aria-label="Conversations">
+      <div class="left-head">
+        <div class="tabs" role="tablist" aria-label="Conversation scope">
+          <button class="tab idle" id="tab-internal" role="tab" aria-selected="false">Internal</button>
+          <button class="tab active" id="tab-public" role="tab" aria-selected="true">Public</button>
+        </div>
+        <label class="search-wrap" aria-label="Search conversations">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20L16 16"/></svg>
+          <input id="conv-search" type="search" placeholder="Search conversations..." autocomplete="off"/>
+        </label>
+      </div>
+      <div class="conv-list" id="conv-list" role="list">
+        <!-- items injected -->
+      </div>
+      <div class="left-foot">
+        <button class="btn-ghost" id="btn-new">+ New conversation</button>
+      </div>
+    </section>
+
+    <!-- Center -->
+    <section class="panel" aria-label="Chat thread" style="display:flex; flex-direction:column">
+      <div class="center-head">
+        <div>
+          <div class="h-title"><span class="emoji" aria-hidden="true">🤖</span> Prokhas AI Assistant</div>
+          <div class="h-sub" id="conv-subtitle">Conversation: <span id="conv-name-label">hi</span> &nbsp;·&nbsp; <span id="conv-count">7 messages</span></div>
+        </div>
+        <div class="center-actions">
+          <button class="mini-btn" id="btn-copy">Copy</button>
+          <button class="mini-btn" id="btn-clear">Clear</button>
+        </div>
+      </div>
+      <div class="thread" id="thread">
+        <div class="bubble-row" id="bubble-row"></div>
+      </div>
+      <div class="composer" aria-label="Composer">
+        <div class="composer-row">
+          <input id="composer-input" type="text" placeholder="Type a message to test the chat… (Enter to send)" />
+          <button class="send" id="btn-send">Send</button>
+        </div>
+        <div class="readonly">Viewing in read-only mode.</div>
+      </div>
+    </section>
+
+    <!-- Right -->
+    <section class="panel right" aria-label="Knowledge Items">
+      <div class="right-head">
+        <div class="k-title"><span class="emoji">📚</span> Knowledge Items</div>
+        <div class="k-sub">Scrollable list. Click an item’s question to test it.</div>
+        <div class="k-search" role="search">
+          <input id="k-search" type="search" placeholder="Search knowledge items..." autocomplete="off"/>
+          <button id="k-search-btn">Search</button>
+        </div>
+      </div>
+      <div class="k-list" id="k-list"></div>
+    </section>
+    </div><!-- /page-online -->
+
+    <!-- ============ DASHBOARD PAGE ============ -->
+    <div id="page-dashboard" class="page">
+      <div class="dash-welcome">
+        <h2>Welcome back, Super Admin</h2>
+        <p>Here's what's happening with Prokhas AI today.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon purple">💬</div>
+          <div class="stat-val">1,247</div>
+          <div class="stat-label">Total Conversations</div>
+          <div class="stat-change up">↑ 12% this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">📚</div>
+          <div class="stat-val">48</div>
+          <div class="stat-label">Knowledge Items</div>
+          <div class="stat-change up">↑ 3 new</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">👥</div>
+          <div class="stat-val">312</div>
+          <div class="stat-label">Active Users</div>
+          <div class="stat-change up">↑ 8% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rose">⚡</div>
+          <div class="stat-val">94.2%</div>
+          <div class="stat-label">Response Rate</div>
+          <div class="stat-change up">↑ 1.3%</div>
+        </div>
+      </div>
+      <div class="dash-row">
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <h3>Recent Activity</h3>
+            <span style="font-size:12px; color:var(--faint)">Today</span>
+          </div>
+          <div class="dash-card-body">
+            <div class="activity-item">
+              <div class="activity-dot info"></div>
+              <div class="activity-text"><b>New conversation</b> started by Public Chat Visitor</div>
+              <div class="activity-time">2 min ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot success"></div>
+              <div class="activity-text"><b>Knowledge item</b> "Leave policy" was updated by HR</div>
+              <div class="activity-time">18 min ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot warn"></div>
+              <div class="activity-text"><b>Chatbot</b> response flagged as unhelpful (1 time)</div>
+              <div class="activity-time">42 min ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot info"></div>
+              <div class="activity-text"><b>Internal user</b> raised IT VPN ticket via chat</div>
+              <div class="activity-time">1 hr ago</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot success"></div>
+              <div class="activity-text"><b>Expense claim</b> knowledge item auto-matched 23 queries</div>
+              <div class="activity-time">2 hrs ago</div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-head">
+            <h3>Quick Actions</h3>
+          </div>
+          <div class="dash-card-body">
+            <div class="quick-link" onclick="document.querySelector('[data-nav=knowledge]').click()">
+              <div class="quick-link-icon ql-purple">📚</div>
+              <div class="quick-link-text">
+                <div class="ql-title">Manage Knowledge Items</div>
+                <div class="ql-sub">Add, edit, or review knowledge base entries</div>
+              </div>
+              <div class="quick-link-arrow">›</div>
+            </div>
+            <div class="quick-link" onclick="document.querySelector('[data-nav=chatbot]').click()">
+              <div class="quick-link-icon ql-green">🤖</div>
+              <div class="quick-link-text">
+                <div class="ql-title">Chatbot Settings</div>
+                <div class="ql-sub">Configure bot personality, training, and integrations</div>
+              </div>
+              <div class="quick-link-arrow">›</div>
+            </div>
+            <div class="quick-link" onclick="document.querySelector('[data-nav=online]').click()">
+              <div class="quick-link-icon ql-amber">💬</div>
+              <div class="quick-link-text">
+                <div class="ql-title">Monitor Live Chats</div>
+                <div class="ql-sub">View and respond to active conversations</div>
+              </div>
+              <div class="quick-link-arrow">›</div>
+            </div>
+            <div class="quick-link" onclick="document.querySelector('[data-nav=notifications]').click()">
+              <div class="quick-link-icon" style="background:#FEF2F2; border:1px solid #FECDD3">🔔</div>
+              <div class="quick-link-text">
+                <div class="ql-title">View Notifications</div>
+                <div class="ql-sub">Check alerts, updates, and system messages</div>
+              </div>
+              <div class="quick-link-arrow">›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-dashboard -->
+
+    <!-- ============ KNOWLEDGE ITEMS PAGE ============ -->
+    <div id="page-knowledge" class="page">
+      <div class="ki-header">
+        <h2><span class="emoji">📚</span> Knowledge Items</h2>
+        <div class="ki-actions">
+          <input id="ki-search" type="search" placeholder="Search knowledge items…" style="background:#fff; border:1px solid var(--line); border-radius:10px; padding:9px 14px; font-size:13px; outline:none; width:240px" autocomplete="off"/>
+          <button class="ki-btn primary" id="ki-add-btn">+ Add New Item</button>
+        </div>
+      </div>
+      <div class="ki-filters" id="ki-filters">
+        <button class="ki-filter active" data-dept="all">All Departments</button>
+        <button class="ki-filter" data-dept="IT Department">IT Department</button>
+        <button class="ki-filter" data-dept="HR Department">HR Department</button>
+        <button class="ki-filter" data-dept="Finance">Finance</button>
+        <button class="ki-filter" data-dept="Admin">Admin</button>
+      </div>
+      <div class="ki-grid" id="ki-grid"></div>
+    </div><!-- /page-knowledge -->
+
+    <!-- ============ CHATBOT PAGE ============ -->
+    <div id="page-chatbot" class="page">
+      <div class="cb-header">
+        <h2><span class="emoji">🤖</span> Chatbot Configuration</h2>
+        <button class="cb-save" id="cb-save-btn">Save Changes</button>
+      </div>
+      <div class="cb-stat-row">
+        <div class="cb-stat">
+          <div class="cb-s-val">94.2%</div>
+          <div class="cb-s-label">Accuracy Rate</div>
+        </div>
+        <div class="cb-stat">
+          <div class="cb-s-val">1,247</div>
+          <div class="cb-s-label">Total Queries Handled</div>
+        </div>
+        <div class="cb-stat">
+          <div class="cb-s-val">1.2s</div>
+          <div class="cb-s-label">Avg Response Time</div>
+        </div>
+        <div class="cb-stat">
+          <div class="cb-s-val">48</div>
+          <div class="cb-s-label">Knowledge Items Trained</div>
+        </div>
+      </div>
+      <div class="cb-grid">
+        <div class="cb-panel">
+          <div class="cb-panel-head">
+            <div class="cb-icon" style="background:#EEF2FF; border:1px solid #E0E7FF">⚙️</div>
+            <h3>General Settings</h3>
+          </div>
+          <div class="cb-panel-body">
+            <div class="cb-field">
+              <label>Bot Name</label>
+              <input type="text" value="Prokhas AI Assistant"/>
+            </div>
+            <div class="cb-field">
+              <label>Welcome Message</label>
+              <textarea>Welcome to Prokhas AI! I can help you with IT support, HR policies, expense claims, and more. How can I assist you today?</textarea>
+            </div>
+            <div class="cb-field">
+              <label>Fallback Message</label>
+              <input type="text" value="I'm sorry, I don't have information on that. Let me connect you with the right department."/>
+            </div>
+            <div class="cb-field">
+              <label>Language</label>
+              <select>
+                <option selected>English</option>
+                <option>Bahasa Malaysia</option>
+                <option>Mandarin</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="cb-panel">
+          <div class="cb-panel-head">
+            <div class="cb-icon" style="background:#F0FDF4; border:1px solid #BBF7D0">🧠</div>
+            <h3>Behaviour & Training</h3>
+          </div>
+          <div class="cb-panel-body">
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch on" data-toggle="ai"></div>
+              <div>
+                <div class="cb-toggle-label">AI-Powered Responses</div>
+                <div class="cb-toggle-sub">Use NLP to understand queries beyond exact matches</div>
+              </div>
+            </div>
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch on" data-toggle="fallback"></div>
+              <div>
+                <div class="cb-toggle-label">Auto-Escalation</div>
+                <div class="cb-toggle-sub">Route unresolved queries to human agents after 2 attempts</div>
+              </div>
+            </div>
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch" data-toggle="feedback"></div>
+              <div>
+                <div class="cb-toggle-label">Feedback Collection</div>
+                <div class="cb-toggle-sub">Prompt users for feedback after each response</div>
+              </div>
+            </div>
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch on" data-toggle="hours"></div>
+              <div>
+                <div class="cb-toggle-label">Business Hours Only</div>
+                <div class="cb-toggle-sub">Only respond during Mon–Fri, 8:30am–5:30pm MYT</div>
+              </div>
+            </div>
+            <div class="cb-field" style="margin-top:14px">
+              <label>Max Retries Before Escalation</label>
+              <input type="number" value="2" min="1" max="5" style="width:80px"/>
+            </div>
+          </div>
+        </div>
+        <div class="cb-panel">
+          <div class="cb-panel-head">
+            <div class="cb-icon" style="background:#FFFBEB; border:1px solid #FDE68A">🔗</div>
+            <h3>Integrations</h3>
+          </div>
+          <div class="cb-panel-body">
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch on" data-toggle="email"></div>
+              <div>
+                <div class="cb-toggle-label">Email Notifications</div>
+                <div class="cb-toggle-sub">Send daily digest of unresolved queries</div>
+              </div>
+            </div>
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch" data-toggle="slack"></div>
+              <div>
+                <div class="cb-toggle-label">Slack Integration</div>
+                <div class="cb-toggle-sub">Forward escalated queries to #helpdesk channel</div>
+              </div>
+            </div>
+            <div class="cb-toggle">
+              <div class="cb-toggle-switch on" data-toggle="hrms"></div>
+              <div>
+                <div class="cb-toggle-label">HRMS Connection</div>
+                <div class="cb-toggle-sub">Pull leave balances and policy data automatically</div>
+              </div>
+            </div>
+            <div class="cb-field" style="margin-top:14px">
+              <label>API Endpoint URL</label>
+              <input type="text" value="https://api.prokhas.my/chatbot/v2" placeholder="https://..."/>
+            </div>
+          </div>
+        </div>
+        <div class="cb-panel">
+          <div class="cb-panel-head">
+            <div class="cb-icon" style="background:#FEF2F2; border:1px solid #FECDD3">🎨</div>
+            <h3>Appearance</h3>
+          </div>
+          <div class="cb-panel-body">
+            <div class="cb-field">
+              <label>Primary Colour</label>
+              <div style="display:flex; gap:8px; align-items:center">
+                <input type="color" value="#6366F1" style="width:40px; height:36px; border:none; cursor:pointer; border-radius:8px"/>
+                <input type="text" value="#6366F1" style="width:100px; font-family:monospace"/>
+              </div>
+            </div>
+            <div class="cb-field">
+              <label>Chat Widget Position</label>
+              <select>
+                <option selected>Bottom Right</option>
+                <option>Bottom Left</option>
+              </select>
+            </div>
+            <div class="cb-field">
+              <label>Avatar</label>
+              <div style="display:flex; gap:10px; align-items:center">
+                <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#6366F1,#7C3AED); display:grid; place-items:center; font-size:22px; color:#fff; border:2px solid #E0E7FF">🤖</div>
+                <button class="ki-btn" style="font-size:12px">Change Avatar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /page-chatbot -->
+
+    <!-- ============ NOTIFICATIONS PAGE ============ -->
+    <div id="page-notifications" class="page">
+      <div class="nt-header">
+        <h2><span class="emoji">🔔</span> Notifications</h2>
+        <button class="ki-btn" id="nt-mark-all">Mark all as read</button>
+      </div>
+      <div class="nt-filters" id="nt-filters">
+        <button class="nt-filter active" data-nt="all">All</button>
+        <button class="nt-filter" data-nt="unread">Unread</button>
+        <button class="nt-filter" data-nt="info">Info</button>
+        <button class="nt-filter" data-nt="success">Success</button>
+        <button class="nt-filter" data-nt="warning">Warning</button>
+        <button class="nt-filter" data-nt="error">Error</button>
+      </div>
+      <div class="nt-list" id="nt-list"></div>
+    </div><!-- /page-notifications -->
+
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const conversations = [
+  {id:'c1', name:'hi', scope:'public', preview:'what information you have ?', avatar:'H', updated:'06/08/26 13:36'},
+  {id:'c2', name:'Leave enquiry — annual balance', scope:'public', preview:'How many days of annual leave do I have?', avatar:'L', updated:'05/08/26 09:12'},
+  {id:'c3', name:'Payroll issue #412', scope:'internal', preview:'My July payslip shows wrong deduction', avatar:'P', updated:'04/08/26 16:04'},
+  {id:'c4', name:'IT — VPN not connecting', scope:'internal', preview:'VPN error 619 on Windows 11', avatar:'V', updated:'03/08/26 11:30'},
+];
+
+const knowledge = [
+  {
+    id:'k1',
+    title:'How to report an IT issue',
+    dept:'IT Department',
+    on:true,
+    q:'Q: how do I report a technical problem?',
+    answer:'To report a technical problem, open the IT Helpdesk portal (helpdesk.prokhas.my), click “New Ticket”, select category (Hardware/Network/Software), describe the issue with screenshots, and submit. You’ll receive a ticket ID via email. For urgent outage, call ext. 3301 or email it-support@prokhas.my. SLA: response within 4 hours on business days.',
+    desc:'Step-by-step guide to lodge an IT ticket via the Helpdesk portal, including category, evidence, and SLA.'
+  },
+  {
+    id:'k2',
+    title:'IT support contact',
+    dept:'IT Department',
+    on:true,
+    q:'Q: what is the IT support contact?',
+    answer:'IT Support is available Mon–Fri, 8:30am–5:30pm (MYT). Portal: helpdesk.prokhas.my · Email: it-support@prokhas.my · Phone ext. 3301 / 3302 · Walk-in: Level 3, Menara Prokhas, Room 3.04. After hours, leave a ticket; on-call engineer responds for P1 incidents.',
+    desc:'Contact channels, hours, and escalation for IT Support (portal, email, phone, walk-in).'
+  },
+  {
+    id:'k3',
+    title:'Leave policy',
+    dept:'HR Department',
+    on:true,
+    q:'Q: what is the annual leave policy?',
+    answer:'Annual leave entitlement: 14 days ( <2 years service ), 16 days (2–5 years), 22 days ( >5 years ). Leave must be applied via HRMS at least 3 days in advance and approved by your reporting manager. Unutilised leave may be carried forward up to 5 days to Q1 next year with HOD approval. Medical leave requires MC uploaded within 48 hours.',
+    desc:'Entitlement, application, approval, and carry-forward rules for annual and medical leave.'
+  },
+  {
+    id:'k4',
+    title:'Expense claim procedure',
+    dept:'Finance',
+    on:true,
+    q:'Q: how do I submit an expense claim?',
+    answer:'Submit via Finance Portal → Claims → New Claim. Attach receipts (PDF/JPG), select cost centre, and route to your manager. Claims < RM500 auto-approve after manager, >RM500 requires Finance verification. Payout is every Thursday for submissions before Tuesday 3pm.',
+    desc:'How to file travel and out-of-pocket claims, limits, and payout schedule.'
+  },
+  {
+    id:'k5',
+    title:'Meeting room booking',
+    dept:'Admin',
+    on:true,
+    q:'Q: how to book a meeting room?',
+    answer:'Use Outlook → Calendar → New Meeting → Room Finder. Filter by floor and capacity, or book via the Admin portal (rooms.prokhas.my). Cancel at least 2 hours before if not needed. Rooms auto-release if no check-in within 15 minutes.',
+    desc:'Book, cancel, and auto-release rules for meeting rooms.'
+  }
+];
+
+const threadSeed = [
+  {role:'user', name:'Public Chat Visitor', text:'what information you have ?', time:'06/08/26 13:36'},
+  {role:'bot', name:'Prokhas Bot', text:'We have information on IT support, HR leave policy, expense claims, meeting-room booking, and more. Try asking: “how do I report a technical problem?” or “what is the annual leave policy?”', time:'06/08/26 13:36'},
+  {role:'user', name:'Public Chat Visitor', text:'how do I report a technical problem ?', time:'06/08/26 13:37'},
+  {role:'bot', name:'Prokhas Bot', text:'To report a technical problem, open the IT Helpdesk portal (helpdesk.prokhas.my), click “New Ticket”, choose a category, add screenshots, and submit. You’ll get a ticket ID by email. For urgent outage: ext. 3301.', time:'06/08/26 13:37'},
+  {role:'user', name:'Public Chat Visitor', text:'what is the contact for IT?', time:'06/08/26 13:38'},
+  {role:'bot', name:'Prokhas Bot', text:'IT Support — helpdesk.prokhas.my · it-support@prokhas.my · ext. 3301/3302 · Level 3, Room 3.04 · Mon–Fri 8:30am–5:30pm MYT. After hours, log a ticket for P1 on-call response.', time:'06/08/26 13:38'},
+  {role:'user', name:'Public Chat Visitor', text:'leave policy ?', time:'06/08/26 13:39'},
+  {role:'bot', name:'Prokhas Bot', text:'Annual leave: 14 days (<2y), 16 days (2–5y), 22 days (>5y). Apply in HRMS ≥3 days before, manager approval required. Carry forward up to 5 days to next Q1 with HOD approval. Upload MC within 48h.', time:'06/08/26 13:39'},
+];
+
+let activeConvId = 'c1';
+let activeScope = 'public';
+let thread = [...threadSeed];
+
+const elConvList = document.getElementById('conv-list');
+const elConvSearch = document.getElementById('conv-search');
+const elTabPublic = document.getElementById('tab-public');
+const elTabInternal = document.getElementById('tab-internal');
+const elBubbleRow = document.getElementById('bubble-row');
+const elThread = document.getElementById('thread');
+const elKList = document.getElementById('k-list');
+const elKSearch = document.getElementById('k-search');
+const elKSearchBtn = document.getElementById('k-search-btn');
+const elConvLabel = document.getElementById('conv-name-label');
+const elConvCount = document.getElementById('conv-count');
+const elComposer = document.getElementById('composer-input');
+const toastEl = document.getElementById('toast');
+
+function toast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastEl._t);
+  toastEl._t=setTimeout(()=>toastEl.classList.remove('show'), 1800);
+}
+
+function renderConvs(){
+  const q = (elConvSearch.value||'').toLowerCase().trim();
+  const filtered = conversations.filter(c=>{
+    if(c.scope!==activeScope) return false;
+    if(q && !(c.name.toLowerCase().includes(q) || c.preview.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(filtered.length===0){
+    elConvList.innerHTML = `<div class="empty">No conversations in <b>${activeScope}</b> matching “${escapeHtml(q)}”.</div>`;
+    return;
+  }
+  elConvList.innerHTML = filtered.map(c=>`
+    <div class="conv-item ${c.id===activeConvId?'selected':''}" data-id="${c.id}" role="listitem" tabindex="0">
+      <div class="conv-ava">${escapeHtml(c.avatar)}</div>
+      <div class="conv-meta">
+        <div class="conv-name">${escapeHtml(c.name)}</div>
+        <div class="conv-sub">${escapeHtml(c.preview)}</div>
+      </div>
+      <div class="conv-actions">
+        <button class="icon-btn" data-act="edit" title="Edit"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></button>
+        <button class="icon-btn danger" data-act="delete" title="Delete"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+      </div>
+    </div>
+  `).join('');
+  // bind
+  elConvList.querySelectorAll('.conv-item').forEach(row=>{
+    row.addEventListener('click', (e)=>{
+      const act = e.target.closest('button')?.dataset.act;
+      const id = row.dataset.id;
+      if(act==='edit'){
+        e.stopPropagation();
+        const c = conversations.find(x=>x.id===id);
+        const nv = prompt('Rename conversation:', c.name);
+        if(nv!==null && nv.trim()){ c.name = nv.trim(); c.preview = nv.trim().slice(0,40); renderConvs(); if(id===activeConvId){ elConvLabel.textContent=c.name; } toast('Conversation renamed');}
+        return;
+      }
+      if(act==='delete'){
+        e.stopPropagation();
+        if(!confirm('Delete this conversation?')) return;
+        const idx = conversations.findIndex(x=>x.id===id);
+        conversations.splice(idx,1);
+        if(id===activeConvId){
+          const next = conversations.find(x=>x.scope===activeScope) || conversations[0];
+          if(next){ activeConvId=next.id; thread=[]; renderConvs(); renderThread(); syncHeader(); }
+          else { elBubbleRow.innerHTML=''; syncHeader(); renderConvs(); }
+        } else renderConvs();
+        toast('Conversation deleted');
+        return;
+      }
+      activeConvId=id;
+      const c = conversations.find(x=>x.id===id);
+      // simulate switching thread content per conversation: keep seed for c1, demo alternating for others
+      if(id==='c1'){ thread=[...threadSeed]; }
+      else if(id==='c2'){ thread=[{role:'user', name:'Public Chat Visitor', text:'How many days of annual leave do I have left?', time:'05/08/26 09:12'},{role:'bot', name:'Prokhas Bot', text:'Your balance depends on service length. Check HRMS → Leave → Balance. Policy: 14/16/22 days by tenure, carry forward up to 5 days to Q1.', time:'05/08/26 09:12'}];}
+      else if(id==='c3'){ thread=[{role:'user', name:'Internal User', text:'My July payslip shows wrong deduction', time:'04/08/26 16:04'},{role:'bot', name:'Prokhas Bot', text:'Please raise a ticket via Finance Portal → Payroll → Dispute, attach payslip PDF, and tag Finance. SLA 2 business days.', time:'04/08/26 16:05'}];}
+      else { thread=[{role:'user', name:'Internal User', text:'VPN error 619 on Windows 11', time:'03/08/26 11:30'},{role:'bot', name:'Prokhas Bot', text:'Try: 1) Restart VPN client 2) Re-add VPN profile with MSCHAPv2 3) Disable IPv6. If still failing, IT will reset your AD credential — ticket via helpdesk.prokhas.my.', time:'03/08/26 11:31'}];}
+      renderConvs(); renderThread(); syncHeader();
+    });
+    row.addEventListener('keydown', (e)=>{ if(e.key==='Enter') row.click(); });
+  });
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]))}
+
+function syncHeader(){
+  const c = conversations.find(x=>x.id===activeConvId);
+  elConvLabel.textContent = c? c.name : '—';
+  elConvCount.textContent = thread.length + ' messages';
+}
+
+function renderThread(){
+  if(thread.length===0){
+    elBubbleRow.innerHTML = `<div class="empty">No messages yet. Ask something or click a Knowledge Item question on the right.</div>`;
+    return;
+  }
+  elBubbleRow.innerHTML = thread.map(m=>{
+    if(m.role==='user'){
+      return `<div class="msg user" role="article">
+        <div class="msg-head"><span class="who">Public Chat Visitor</span><span class="time">${escapeHtml(m.time)}</span></div>
+        <p>${escapeHtml(m.text)}</p>
+      </div>`;
+    } else {
+      return `<div class="msg bot" role="article">
+        <div class="msg-head"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true">🤖</span><span class="who" style="color:#4F46E5">Prokhas Bot</span></span><span class="time">${escapeHtml(m.time)}</span></div>
+        <p>${escapeHtml(m.text)}</p>
+        <div class="feedback" aria-label="Feedback">
+          <button class="fb" title="Helpful" data-fb="up"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9l6-3v12l-6-3z"/><path d="M4 12h6v8H4z"/></svg></button>
+          <button class="fb" title="Not helpful" data-fb="down"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><path d="M14 9l6-3v12l-6-3z"/><path d="M4 12h6v8H4z"/></svg></button>
+        </div>
+      </div>`;
+    }
+  }).join('');
+  // feedback bind
+  elBubbleRow.querySelectorAll('.fb').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      btn.classList.toggle('active');
+      const other = btn.parentElement.querySelector(`.fb[data-fb="${btn.dataset.fb==='up'?'down':'up'}"]`);
+      if(btn.classList.contains('active')) other.classList.remove('active');
+      toast(btn.dataset.fb==='up' ? 'Thanks for the feedback — marked helpful' : 'Thanks — we’ll improve this answer');
+    });
+  });
+  // scroll to bottom
+  requestAnimationFrame(()=>{ elThread.scrollTop = elThread.scrollHeight; });
+  syncHeader();
+}
+
+function renderKnowledge(){
+  const q = (elKSearch.value||'').toLowerCase().trim();
+  const list = knowledge.filter(k=>{
+    if(!q) return true;
+    return (k.title+' '+k.q+' '+k.desc+' '+k.dept).toLowerCase().includes(q);
+  });
+  if(list.length===0){
+    elKList.innerHTML = `<div class="empty">No knowledge items for “${escapeHtml(q)}”.</div>`;
+    return;
+  }
+  elKList.innerHTML = list.map(k=>`
+    <article class="k-card" data-id="${k.id}">
+      <div class="k-card-top">
+        <div class="k-card-title">${escapeHtml(k.title)}</div>
+        <span class="badge-on">On</span>
+      </div>
+      <div class="badge-dept">${escapeHtml(k.dept)}</div>
+      <button class="q-btn" data-q="${escapeHtml(k.q.replace(/^Q:\s*/,''))}">${escapeHtml(k.q)}</button>
+      <div class="k-desc">${escapeHtml(k.desc)}</div>
+    </article>
+  `).join('');
+  elKList.querySelectorAll('.q-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const question = btn.dataset.q;
+      const card = btn.closest('.k-card');
+      const item = knowledge.find(x=>x.id===card.dataset.id);
+      pushUserQuestion(question, item.answer);
+    });
+  });
+}
+
+function nowStamp(){
+  const d=new Date();
+  const dd=String(d.getDate()).padStart(2,'0');
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const yy=String(d.getFullYear()).slice(-2);
+  const hh=String(d.getHours()).padStart(2,'0');
+  const mi=String(d.getMinutes()).padStart(2,'0');
+  return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+}
+function pushUserQuestion(qText, botAnswer){
+  thread.push({role:'user', name:'Public Chat Visitor', text:qText, time: nowStamp()});
+  renderThread();
+  setTimeout(()=>{
+    thread.push({role:'bot', name:'Prokhas Bot', text: botAnswer, time: nowStamp()});
+    renderThread();
+  }, 420);
+}
+
+function setScope(scope){
+  activeScope = scope;
+  elTabPublic.classList.toggle('active', scope==='public');
+  elTabPublic.classList.toggle('idle', scope!=='public');
+  elTabPublic.setAttribute('aria-selected', scope==='public');
+  elTabInternal.classList.toggle('active', scope==='internal');
+  elTabInternal.classList.toggle('idle', scope!=='internal');
+  elTabInternal.setAttribute('aria-selected', scope==='internal');
+  // pick first conv in scope if current not in scope
+  const cur = conversations.find(c=>c.id===activeConvId);
+  if(!cur || cur.scope!==scope){
+    const nxt = conversations.find(c=>c.scope===scope);
+    if(nxt) activeConvId=nxt.id;
+  }
+  renderConvs();
+}
+
+// events
+elTabPublic.addEventListener('click', ()=>setScope('public'));
+elTabInternal.addEventListener('click', ()=>setScope('internal'));
+elConvSearch.addEventListener('input', renderConvs);
+elKSearch.addEventListener('input', renderKnowledge);
+elKSearchBtn.addEventListener('click', renderKnowledge);
+elKSearch.addEventListener('keydown', e=>{ if(e.key==='Enter') renderKnowledge(); });
+
+document.getElementById('btn-new').addEventListener('click', ()=>{
+  const name = prompt('New conversation name:', 'New chat');
+  if(!name || !name.trim()) return;
+  const id='c'+Date.now();
+  conversations.unshift({id, name:name.trim(), scope:activeScope, preview:name.trim(), avatar:name.trim().charAt(0).toUpperCase(), updated: nowStamp()});
+  activeConvId=id; thread=[]; renderConvs(); renderThread(); syncHeader(); toast('Conversation created');
+});
+
+document.getElementById('btn-send').addEventListener('click', sendComposer);
+elComposer.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendComposer(); }});
+function sendComposer(){
+  const v = elComposer.value.trim();
+  if(!v) return;
+  // try to match knowledge for auto-answer, else generic
+  const hit = knowledge.find(k=> v.toLowerCase().includes(k.q.replace(/^Q:\s*/,'').toLowerCase().slice(0,18)) || k.title.toLowerCase().split(' ').some(w=> w.length>3 && v.toLowerCase().includes(w)));
+  const ans = hit ? hit.answer : 'Thanks for asking — I’ve logged your question. For detailed help, see Knowledge Items on the right or contact the relevant department (IT ext. 3301 / HR ext. 3401).';
+  pushUserQuestion(v, ans);
+  elComposer.value='';
+  // update conv preview
+  const c = conversations.find(x=>x.id===activeConvId);
+  if(c) c.preview = v.slice(0,40);
+  renderConvs();
+}
+document.getElementById('btn-copy').addEventListener('click', async()=>{
+  const txt = thread.map(m=> `${m.role==='user'?'Visitor':'Prokhas Bot'} [${m.time}]: ${m.text}`).join('\n\n');
+  try{ await navigator.clipboard.writeText(txt); toast('Conversation copied'); } catch{ toast('Copy failed — select text manually'); }
+});
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  if(!confirm('Clear this conversation?')) return;
+  thread=[]; renderThread(); toast('Conversation cleared');
+});
+document.getElementById('btn-profile').addEventListener('click', ()=>toast('Profile — Super Admin (demo)'));
+document.getElementById('btn-logout').addEventListener('click', ()=>{
+  if(confirm('Logout? (demo — page will reload)')) location.reload();
+});
+document.querySelectorAll('.pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    const nav = p.dataset.nav;
+    // hide all pages
+    document.querySelectorAll('.page, .page-shell').forEach(pg=>pg.classList.remove('active'));
+    // show target page
+    const target = document.getElementById('page-'+nav);
+    if(target) target.classList.add('active');
+    // render page-specific content
+    if(nav==='knowledge') renderKIPage();
+    if(nav==='notifications') renderNotifications();
+  });
+});
+document.getElementById('mobile-menu').addEventListener('click', ()=>toast('Menu — use header pills on desktop'));
+
+// ====== Knowledge Items Page ======
+let kiActiveDept = 'all';
+function renderKIPage(){
+  const searchEl = document.getElementById('ki-search');
+  const q = (searchEl?searchEl.value:'').toLowerCase().trim();
+  const grid = document.getElementById('ki-grid');
+  const list = knowledge.filter(k=>{
+    if(kiActiveDept!=='all' && k.dept!==kiActiveDept) return false;
+    if(q && !(k.title+' '+k.q+' '+k.desc+' '+k.dept).toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(list.length===0){
+    grid.innerHTML = '<div class="empty">No knowledge items found.</div>';
+    return;
+  }
+  grid.innerHTML = list.map(k=>`
+    <div class="ki-item" data-id="${k.id}">
+      <div class="ki-item-top">
+        <div class="ki-item-title">${escapeHtml(k.title)}</div>
+        <span class="badge-on">On</span>
+      </div>
+      <div class="ki-item-dept">${escapeHtml(k.dept)}</div>
+      <div class="ki-item-desc">${escapeHtml(k.desc)}</div>
+      <div class="ki-item-footer">
+        <span class="ki-status ${k.on?'on':'off'}">${k.on?'Active':'Inactive'}</span>
+        <span class="ki-date">${escapeHtml(k.q)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+// dept filter clicks
+document.getElementById('ki-filters').addEventListener('click', e=>{
+  const btn = e.target.closest('.ki-filter');
+  if(!btn) return;
+  document.querySelectorAll('#ki-filters .ki-filter').forEach(f=>f.classList.remove('active'));
+  btn.classList.add('active');
+  kiActiveDept = btn.dataset.dept;
+  renderKIPage();
+});
+document.getElementById('ki-search').addEventListener('input', renderKIPage);
+document.getElementById('ki-add-btn').addEventListener('click', ()=>toast('Add Knowledge Item — demo'));
+
+// ====== Chatbot Page toggles ======
+document.querySelectorAll('.cb-toggle-switch').forEach(sw=>{
+  sw.addEventListener('click', ()=>{
+    sw.classList.toggle('on');
+  });
+});
+document.getElementById('cb-save-btn').addEventListener('click', ()=>toast('Chatbot settings saved'));
+
+// ====== Notifications Page ======
+const notifications = [
+  {id:'n1', type:'info', icon:'💬', title:'New conversation started', desc:'Public Chat Visitor initiated a conversation about IT support.', time:'2 min ago', unread:true},
+  {id:'n2', type:'success', icon:'✅', title:'Knowledge item updated', desc:'"Leave policy" was updated by HR Department — effective immediately.', time:'18 min ago', unread:true},
+  {id:'n3', type:'warning', icon:'⚠️', title:'Low confidence response', desc:'Chatbot gave a response with confidence below 60% on "VPN configuration".', time:'42 min ago', unread:true},
+  {id:'n4', type:'info', icon:'📊', title:'Weekly report ready', desc:'Your weekly chatbot performance report for Aug 1–7 is available.', time:'1 hr ago', unread:false},
+  {id:'n5', type:'error', icon:'🔴', title:'Integration error', desc:'Slack webhook failed to deliver 3 escalation notifications. Retrying.', time:'2 hrs ago', unread:false},
+  {id:'n6', type:'success', icon:'🎉', title:'Milestone reached', desc:'Chatbot has now handled over 1,000 conversations this month!', time:'3 hrs ago', unread:false},
+  {id:'n7', type:'info', icon:'👤', title:'New admin added', desc:'Admin user "Siti Aminah" was granted Knowledge Editor access.', time:'5 hrs ago', unread:false},
+  {id:'n8', type:'warning', icon:'📅', title:'Leave policy expiring', desc:'Carry-forward leave balance window closes in 7 days. Remind staff.', time:'Yesterday', unread:false},
+  {id:'n9', type:'info', icon:'🔧', title:'System maintenance scheduled', desc:'Planned maintenance window: Saturday 2am–4am MYT. Chatbot will be offline.', time:'Yesterday', unread:false},
+  {id:'n10', type:'success', icon:'📈', title:'Accuracy improved', desc:'Chatbot accuracy increased from 92.8% to 94.2% after knowledge base update.', time:'2 days ago', unread:false},
+];
+let ntActiveFilter = 'all';
+function renderNotifications(){
+  const list = document.getElementById('nt-list');
+  const filtered = notifications.filter(n=>{
+    if(ntActiveFilter==='all') return true;
+    if(ntActiveFilter==='unread') return n.unread;
+    return n.type===ntActiveFilter;
+  });
+  if(filtered.length===0){
+    list.innerHTML = '<div class="empty">No notifications match this filter.</div>';
+    return;
+  }
+  const iconMap = {info:'nt-info',success:'nt-success',warning:'nt-warn',error:'nt-error'};
+  list.innerHTML = filtered.map(n=>`
+    <div class="nt-item ${n.unread?'unread':''}" data-id="${n.id}">
+      <div class="nt-icon ${iconMap[n.type]||'nt-info'}">${n.icon}</div>
+      <div class="nt-content">
+        <div class="nt-title">${escapeHtml(n.title)}${n.unread?'<span class="nt-badge new">NEW</span>':''}</div>
+        <div class="nt-desc">${escapeHtml(n.desc)}</div>
+      </div>
+      <div class="nt-time">${escapeHtml(n.time)}</div>
+    </div>
+  `).join('');
+  // mark as read on click
+  list.querySelectorAll('.nt-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const n = notifications.find(x=>x.id===item.dataset.id);
+      if(n){ n.unread=false; renderNotifications(); }
+    });
+  });
+}
+document.getElementById('nt-filters').addEventListener('click', e=>{
+  const btn = e.target.closest('.nt-filter');
+  if(!btn) return;
+  document.querySelectorAll('#nt-filters .nt-filter').forEach(f=>f.classList.remove('active'));
+  btn.classList.add('active');
+  ntActiveFilter = btn.dataset.nt;
+  renderNotifications();
+});
+document.getElementById('nt-mark-all').addEventListener('click', ()=>{
+  notifications.forEach(n=>n.unread=false);
+  renderNotifications();
+  toast('All notifications marked as read');
+});
+
+// init
+renderConvs();
+renderThread();
+renderKnowledge();
+syncHeader();
+</script>
+</body>
+</html>

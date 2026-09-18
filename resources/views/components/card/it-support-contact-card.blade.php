@@ -1,0 +1,1 @@
+<div class="rounded-xl bg-[#F1F5F9] p-3 flex flex-col gap-2"><x-badge.it-department-badge /><x-button.knowledge-question-button>who do I contact for IT support</x-button><p class="text-xs text-slate-400">{{ $slot }}</p></div>

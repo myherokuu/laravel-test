@@ -1,0 +1,1 @@
+<div class="self-start max-w-[85%] rounded-2xl bg-[#F1F5F9] px-4 py-3 text-sm text-[#1E293B]"><span class="text-xs font-semibold text-[#6366F1]">Prokhas Bot</span><div>{{ $slot }}</div><x-icon.bot-feedback-icons /><x-typography.message-timestamp /></div>

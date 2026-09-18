@@ -1,0 +1,1 @@
+<div class="flex gap-3 mt-2 text-slate-400 text-xs"><span>👍</span><span>👎</span></div>

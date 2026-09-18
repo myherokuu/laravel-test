@@ -1,0 +1,1 @@
+<button class="rounded-full border border-white px-4 py-1 text-sm text-white">Chatbot</button>

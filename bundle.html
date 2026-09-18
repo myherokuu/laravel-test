@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse — Feel More, Function Better</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#faf8f5;--fg:#1a1614;--muted:#6b5e54;--accent:#c45d3e;
+    --surface:#f0ece6;--surface-alt:#e8e2d9;--border:#d6cec3;
+    --radius:6px;--font:'Georgia','Times New Roman',serif;
+    --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{
+      --bg:#1a1614;--fg:#f0ece6;--muted:#9b8e82;--accent:#e07a5f;
+      --surface:#252019;--surface-alt:#302a21;--border:#3d3529;
+    }
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+
+  body{
+    font-family:var(--font-sans);background:var(--bg);color:var(--fg);
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:1rem 2.5rem;
+    background:color-mix(in srgb,var(--bg) 85%,transparent);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    transition:background .3s;
+  }
+  .logo{font-family:var(--font);font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
+  .logo span{color:var(--accent)}
+  nav ul{list-style:none;display:flex;gap:2rem}
+  nav a{
+    color:var(--muted);text-decoration:none;font-size:.875rem;
+    transition:color .2s;letter-spacing:.01em;
+  }
+  nav a:hover{color:var(--fg)}
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;align-items:flex-start;
+    padding:8rem 2.5rem 4rem;max-width:720px;
+    animation:fadeUp .8s ease-out both;
+  }
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .hero time{
+    font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--muted);margin-bottom:1rem;display:block;
+  }
+  .hero h1{
+    font-family:var(--font);font-size:clamp(2.4rem,5.5vw,3.8rem);
+    line-height:1.12;font-weight:700;letter-spacing:-.03em;
+    margin-bottom:1.5rem;
+  }
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{
+    font-size:1.125rem;color:var(--muted);max-width:520px;
+    margin-bottom:2.5rem;line-height:1.7;
+  }
+
+  /* ── MOOD PICKER ── */
+  .mood-section{
+    padding:5rem 2.5rem;max-width:720px;
+    animation:fadeUp .8s ease-out .2s both;
+  }
+  .mood-section h2{
+    font-family:var(--font);font-size:1.75rem;letter-spacing:-.02em;
+    margin-bottom:.5rem;
+  }
+  .mood-section>p{color:var(--muted);margin-bottom:2rem;font-size:.95rem}
+  .mood-grid{display:flex;gap:1rem;flex-wrap:wrap}
+  .mood-btn{
+    display:flex;flex-direction:column;align-items:center;gap:.5rem;
+    padding:1.25rem 1.5rem;border-radius:var(--radius);
+    border:2px solid var(--border);background:var(--surface);
+    cursor:pointer;transition:all .25s ease;min-width:100px;
+    font-family:var(--font-sans);
+  }
+  .mood-btn:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .mood-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+  .mood-btn .emoji{font-size:1.8rem}
+  .mood-btn .label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+  .mood-response{
+    margin-top:2rem;padding:1.5rem 2rem;border-radius:var(--radius);
+    background:var(--surface);border-left:3px solid var(--accent);
+    opacity:0;transform:translateY(8px);transition:all .4s ease;
+    max-height:0;overflow:hidden;
+  }
+  .mood-response.visible{opacity:1;transform:translateY(0);max-height:200px}
+  .mood-response p{font-family:var(--font);font-size:1.05rem;line-height:1.6}
+  .mood-response .from{font-size:.75rem;color:var(--muted);margin-top:.75rem;text-transform:uppercase;letter-spacing:.1em}
+
+  /* ── FEATURES ── */
+  .features{
+    padding:5rem 2.5rem;max-width:960px;
+    animation:fadeUp .8s ease-out .3s both;
+  }
+  .features h2{
+    font-family:var(--font);font-size:1.75rem;letter-spacing:-.02em;
+    margin-bottom:3rem;
+  }
+  .feature-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:2rem;
+  }
+  .feature-card{
+    padding:2rem;border-radius:var(--radius);background:var(--surface);
+    border:1px solid var(--border);transition:border-color .2s;
+  }
+  .feature-card:hover{border-color:var(--accent)}
+  .feature-card .icon{
+    width:40px;height:40px;border-radius:50%;
+    background:color-mix(in srgb,var(--accent) 12%,var(--surface));
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;margin-bottom:1rem;
+  }
+  .feature-card h3{
+    font-family:var(--font);font-size:1.1rem;margin-bottom:.5rem;
+    letter-spacing:-.01em;
+  }
+  .feature-card p{font-size:.875rem;color:var(--muted);line-height:1.65}
+
+  /* ── CHECK-IN ── */
+  .checkin{
+    padding:5rem 2.5rem;max-width:720px;
+    animation:fadeUp .8s ease-out .4s both;
+  }
+  .checkin h2{
+    font-family:var(--font);font-size:1.75rem;letter-spacing:-.02em;
+    margin-bottom:.5rem;
+  }
+  .checkin>p{color:var(--muted);margin-bottom:2rem;font-size:.95rem}
+  .checkin-form{display:flex;flex-direction:column;gap:1rem}
+  .checkin-input{
+    padding:.85rem 1rem;border-radius:var(--radius);
+    border:1px solid var(--border);background:var(--surface);
+    font-family:var(--font-sans);font-size:.95rem;color:var(--fg);
+    transition:border-color .2s;resize:none;min-height:120px;
+  }
+  .checkin-input:focus{outline:none;border-color:var(--accent)}
+  .checkin-input::placeholder{color:var(--muted);opacity:.7}
+  .checkin-submit{
+    align-self:flex-start;padding:.75rem 2rem;border-radius:var(--radius);
+    background:var(--accent);color:#fff;border:none;font-size:.875rem;
+    font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.01em;
+    font-family:var(--font-sans);
+  }
+  .checkin-submit:hover{opacity:.88;transform:translateY(-1px)}
+  .checkin-feedback{
+    margin-top:1.5rem;padding:1.25rem 1.5rem;border-radius:var(--radius);
+    background:var(--surface);border-left:3px solid var(--accent);
+    display:none;
+  }
+  .checkin-feedback.visible{display:block;animation:fadeUp .5s ease-out both}
+  .checkin-feedback p{font-size:.95rem;line-height:1.6}
+  .checkin-feedback .validation{font-size:.8rem;color:var(--muted);margin-top:.5rem;font-style:italic}
+
+  /* ── TESTIMONIALS ── */
+  .testimonials{
+    padding:5rem 2.5rem;max-width:960px;
+    animation:fadeUp .8s ease-out .45s both;
+  }
+  .testimonials h2{
+    font-family:var(--font);font-size:1.75rem;letter-spacing:-.02em;
+    margin-bottom:3rem;
+  }
+  .testimonial-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:2rem;
+  }
+  .testimonial-card{
+    padding:2rem;border-radius:var(--radius);background:var(--surface);
+    border:1px solid var(--border);
+  }
+  .testimonial-card blockquote{
+    font-family:var(--font);font-size:1rem;line-height:1.65;
+    margin-bottom:1rem;font-style:italic;
+  }
+  .testimonial-card .author{
+    font-size:.8rem;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  /* ── CTA ── */
+  .cta{
+    padding:6rem 2.5rem;text-align:center;
+    animation:fadeUp .8s ease-out .5s both;
+  }
+  .cta h2{
+    font-family:var(--font);font-size:clamp(1.8rem,4vw,2.5rem);
+    letter-spacing:-.03em;margin-bottom:1rem;
+  }
+  .cta p{color:var(--muted);margin-bottom:2rem;font-size:1rem;max-width:480px;margin-left:auto;margin-right:auto}
+  .cta-btn{
+    display:inline-block;padding:.85rem 2.5rem;border-radius:var(--radius);
+    background:var(--accent);color:#fff;text-decoration:none;
+    font-weight:600;font-size:.95rem;transition:all .2s;
+    font-family:var(--font-sans);
+  }
+  .cta-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+  /* ── FOOTER ── */
+  footer{
+    padding:3rem 2.5rem;border-top:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:.8rem;color:var(--muted);max-width:960px;margin:0 auto;
+    flex-wrap:wrap;gap:1rem;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--fg)}
+
+  /* ── BREATHING DOT ── */
+  .breath-dot{
+    position:fixed;bottom:2rem;right:2rem;width:10px;height:10px;
+    border-radius:50%;background:var(--accent);
+    animation:breathe 4s ease-in-out infinite;z-index:10;
+  }
+  @keyframes breathe{
+    0%,100%{transform:scale(1);opacity:.6}
+    50%{transform:scale(1.5);opacity:1}
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    nav{padding:.75rem 1.25rem}
+    nav ul{gap:1rem}
+    .hero,.mood-section,.features,.checkin,.testimonials,.cta{
+      padding-left:1.25rem;padding-right:1.25rem;
+    }
+    .mood-grid{gap:.75rem}
+    .mood-btn{min-width:80px;padding:1rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">pulse<span>.</span></div>
+  <ul>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#feel">Check in</a></li>
+    <li><a href="#start">Get started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <time id="greeting-time"></time>
+  <h1 id="hero-title">You're here. That matters.</h1>
+  <p id="hero-sub">Pulse helps you understand what you're feeling — not to fix it, but to sit with it. Because emotional clarity isn't a luxury. It's infrastructure.</p>
+</section>
+
+<!-- MOOD -->
+<section class="mood-section" id="how">
+  <h2>How are you, really?</h2>
+  <p>No wrong answers. Pick what resonates — Pulse adapts to where you are.</p>
+  <div class="mood-grid" role="radiogroup" aria-label="Select your current mood">
+    <button class="mood-btn" data-mood="great" aria-label="Feeling great">
+      <span class="emoji" aria-hidden="true">☀️</span>
+      <span class="label">Great</span>
+    </button>
+    <button class="mood-btn" data-mood="okay" aria-label="Feeling okay">
+      <span class="emoji" aria-hidden="true">🌤️</span>
+      <span class="label">Okay</span>
+    </button>
+    <button class="mood-btn" data-mood="tired" aria-label="Feeling tired">
+      <span class="emoji" aria-hidden="true">😴</span>
+      <span class="label">Tired</span>
+    </button>
+    <button class="mood-btn" data-mood="anxious" aria-label="Feeling anxious">
+      <span class="emoji" aria-hidden="true">🌊</span>
+      <span class="label">Anxious</span>
+    </button>
+    <button class="mood-btn" data-mood="sad" aria-label="Feeling sad">
+      <span class="emoji" aria-hidden="true">🌧️</span>
+      <span class="label">Sad</span>
+    </button>
+    <button class="mood-btn" data-mood="angry" aria-label="Feeling angry">
+      <span class="emoji" aria-hidden="true">🔥</span>
+      <span class="label">Angry</span>
+    </button>
+  </div>
+  <div class="mood-response" id="mood-response" aria-live="polite">
+    <p id="mood-text"></p>
+    <div class="from">— from your check-in</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <h2>Built for real humans, not idealized ones</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">🪞</div>
+      <h3>Mirror Mode</h3>
+      <p>See your emotional patterns over time — not to judge them, but to understand them. Trends reveal what moments hide.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">🤝</div>
+      <h3>Companion Prompts</h3>
+      <p>When things feel heavy, Pulse doesn't offer platitudes. It asks better questions and waits for your real answers.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">🔇</div>
+      <h3>Quiet Mode</h3>
+      <p>Sometimes the kindest thing is silence. Quiet Mode pauses all notifications and just lets you be where you are.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">📊</div>
+      <h3>Intensity Mapping</h3>
+      <p>Emotions aren't binary. Pulse tracks the texture — the sharp edges, the slow builds, the sudden drops — so you can see the full picture.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">🫂</div>
+      <h3>Sidewalk Sessions</h3>
+      <p>Brief, unscripted 2-minute check-ins. Not therapy. Not productivity. Just a place to put words to what's happening.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon" aria-hidden="true">🔒</div>
+      <h3>Vault Privacy</h3>
+      <p>Your feelings are yours. End-to-end encrypted. We can't read them. Your therapist can — if you choose. No middle ground.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CHECK-IN -->
+<section class="checkin" id="feel">
+  <h2>Try a sidewalk session</h2>
+  <p>This isn't tracked. It's just for you. Write what's on your mind.</p>
+  <form class="checkin-form" id="checkin-form">
+    <textarea class="checkin-input" id="checkin-input" placeholder="What's sitting with you right now?" aria-label="Write your check-in"></textarea>
+    <button type="submit" class="checkin-submit">Sit with it</button>
+  </form>
+  <div class="checkin-feedback" id="checkin-feedback">
+    <p id="feedback-text"></p>
+    <p class="validation">There's no wrong way to do this.</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <h2>From people who stopped performing fine</h2>
+  <div class="testimonial-grid">
+    <div class="testimonial-card">
+      <blockquote>"I used to say I was fine. Pulse gave me the vocabulary to say I wasn't — and that was the first honest thing I'd done in months."</blockquote>
+      <div class="author">— a teacher, 34</div>
+    </div>
+    <div class="testimonial-card">
+      <blockquote>"The Quiet Mode saved me during a panic spiral. No prompts, no goals. Just a dark screen and a breathing dot. I needed that."</blockquote>
+      <div class="author">— a designer, 28</div>
+    </div>
+    <div class="testimonial-card">
+      <blockquote>"I showed my therapist my intensity map and she said it was the clearest picture of my year she'd ever seen."</blockquote>
+      <div class="author">— a developer, 41</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="start">
+  <h2>Start where you are</h2>
+  <p>No trial period. No credit card. No onboarding quiz that makes you feel like a specimen. Just an honest tool for honest feelings.</p>
+  <a href="#" class="cta-btn" role="button">Open Pulse</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>&copy; 2026 Pulse. Built with care.</span>
+  <span>
+    <a href="#">Privacy</a> &middot;
+    <a href="#">Terms</a> &middot;
+    <a href="#">Contact</a>
+  </span>
+</footer>
+
+<div class="breath-dot" aria-hidden="true" title="Take a breath"></div>
+
+<script>
+(function(){
+  /* ── Time-aware greeting ── */
+  var h = new Date().getHours();
+  var timeLabel, heroLine;
+  if(h < 6){ timeLabel="Late night"; heroLine="Still awake? That's okay. Some thoughts only come out here."; }
+  else if(h < 9){ timeLabel="Morning"; heroLine="You're here early. The quiet hours are yours."; }
+  else if(h < 12){ timeLabel="Late morning"; heroLine="The day has started. How's it landing so far?"; }
+  else if(h < 14){ timeLabel="Midday"; heroLine="Halfway through. Check in before you push on."; }
+  else if(h < 17){ timeLabel="Afternoon"; heroLine="The afternoon stretch. You're doing more than you think."; }
+  else if(h < 20){ timeLabel="Evening"; heroLine="The day is winding down. What did it give you?"; }
+  else { timeLabel="Night"; heroLine="Evening thoughts. They hit different. That's normal."; }
+
+  document.getElementById('greeting-time').textContent = timeLabel;
+  document.getElementById('hero-title').innerHTML = heroLine;
+
+  /* ── Mood responses (emotionally intelligent, not generic) ── */
+  var responses = {
+    great: "That's genuinely good to hear. Great days aren't common — try to notice what specifically feels good right now. It's worth remembering the specifics, not just the summary.",
+    okay: "\"Okay\" is the most underrated feeling. It means you're steady. Sometimes steady is exactly where you need to be before you can move anywhere else.",
+    tired: "Tired isn't lazy. It's your body telling you something was harder than it looked. Rest isn't something you earn — it's something you need.",
+    anxious: "Anxiety means you care about something. That's not nothing. The trick isn't to silence it — it's to figure out what it's protecting and whether that threat is real right now.",
+    sad: "Sadness is just love with nowhere to go. You don't need to fix it. You just need to let it exist until it doesn't need to anymore.",
+    angry: "Anger is information. It tells you where your boundaries are and when they've been crossed. The question isn't whether you should feel it — it's what you do with the knowledge."
+  };
+
+  var moodBtns = document.querySelectorAll('.mood-btn');
+  var moodResp = document.getElementById('mood-response');
+  var moodText = document.getElementById('mood-text');
+
+  moodBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      moodBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var mood = btn.getAttribute('data-mood');
+      moodText.textContent = responses[mood];
+      moodResp.classList.remove('visible');
+      void moodResp.offsetWidth; // reflow
+      moodResp.classList.add('visible');
+    });
+  });
+
+  /* ── Check-in form ── */
+  var checkinForm = document.getElementById('checkin-form');
+  var checkinInput = document.getElementById('checkin-input');
+  var feedback = document.getElementById('checkin-feedback');
+  var feedbackText = document.getElementById('feedback-text');
+
+  var reflections = [
+    "It sounds like you're carrying something heavy. That takes energy. The fact that you put it into words here means you're not ignoring it — and that's a meaningful first step.",
+    "What you wrote shows self-awareness. Not everyone can name what they're feeling in the moment. That skill — the one you just used — is the foundation of emotional intelligence.",
+    "That's a real thought, not a performed one. There's a difference. Thank you for sharing something real.",
+    "You named something specific. Specificity is hard when emotions feel like static. But you found the thread. That matters.",
+    "Sometimes writing it down makes it both more real and more manageable. You don't have to do anything with this right now. Just knowing it's out of the static helps.",
+    "That took courage. Not the dramatic kind — the quiet kind. The kind where you choose honesty over comfort. That's worth acknowledging."
+  ];
+
+  checkinForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var val = checkinInput.value.trim();
+    if(val.length < 3){
+      feedbackText.textContent = "Write a little more — even one more sentence helps. What's the feeling underneath?";
+      feedback.classList.add('visible');
+      return;
+    }
+    var idx = Math.floor(Math.random() * reflections.length);
+    feedbackText.textContent = reflections[idx];
+    feedback.classList.remove('visible');
+    void feedback.offsetWidth;
+    feedback.classList.add('visible');
+  });
+
+  /* ── Nav scroll behavior ── */
+  window.addEventListener('scroll', function(){
+    var nav = document.querySelector('nav');
+    var scrollY = window.scrollY;
+    if(scrollY > 100){
+      nav.style.background = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    }
+  },{passive:true});
+
+})();
+</script>
+</body>
+</html>

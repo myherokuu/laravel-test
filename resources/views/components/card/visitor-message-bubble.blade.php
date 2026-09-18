@@ -1,0 +1,1 @@
+<div class="self-end max-w-[80%] rounded-2xl bg-gradient-to-r from-[#6366F1] to-indigo-500 px-4 py-2 text-sm text-white">{{ $slot }}</div>

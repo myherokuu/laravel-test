@@ -1,0 +1,1 @@
+<p class="text-center text-xs text-slate-400 py-3">Viewing in read-only mode.</p>

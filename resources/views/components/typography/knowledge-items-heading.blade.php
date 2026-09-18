@@ -1,0 +1,1 @@
+<h2 class="flex items-center gap-2 text-lg font-bold text-[#1E293B]"><x-icon.knowledge-books-icon /> Knowledge Items</h2>

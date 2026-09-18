@@ -1,0 +1,1 @@
+<button class="rounded-lg border bg-white px-3 py-1.5 text-sm">Search</button>

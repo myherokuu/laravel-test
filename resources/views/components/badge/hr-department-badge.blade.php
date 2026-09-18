@@ -1,0 +1,1 @@
+<span class="rounded-full bg-slate-800 text-white text-[10px] px-2 py-0.5">HR Department</span>

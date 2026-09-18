@@ -1,0 +1,6 @@
+2026-09-12 14:15 | INIT | agent ready, waiting for task
+2026-09-14 | DONE | T-014 sketch login flow + BA docs: live flow re-verified via Live Browser (:9998, verdict success), Sketch P-F045EE diagram 31 elements GET-verified, docs/requirements-login-flow.md + user-stories-login.md + design-login-flow.md committed [BA] 55e5ed4, board updated.
+2026-09-15 | DONE | Sambungkan isu jerebu dengan kesejahteraan rakyat dan tindakan menanganinya dalam docs/documents/3e23fa8d9c18.html (commit 2abf679)
+2026-09-15 | DONE | T-019 dokumen polisi bawa makanan ke ofis: docs/documents/32fdfef32cc2.html diisi penuh dalam BM (7 seksyen: tujuan/skop/peraturan/penyimpanan/kebersihan/alahan/pelanggaran), board T-019 Done, committed [BA] 6d9d916.
+2026-09-17 20:59 | DONE | Polisi Agent AI: docs/documents/330ed3517252.html diisi penuh dalam BM (tujuan/skop/prinsip/peranan/etika/data/dibenar-dilarang/semakan/ketelusan/insiden/pelanggaran/semakan), board updated, committed [BA].
+2026-09-17 21:04 | DONE | Sambungan polisi Agent AI: docs/documents/330ed3517252.html Seksyen 13-16 (persediaan Prokhas, kesediaan staff, pelan berfasa, KPI) + live browser :9998 success, committed [BA] 01b8454, board updated.

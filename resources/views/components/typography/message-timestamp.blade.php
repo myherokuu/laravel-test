@@ -1,0 +1,1 @@
+<span class="text-[10px] text-slate-400">{{ $slot ?? '06/08/26 13:36' }}</span>

@@ -1,0 +1,1 @@
+<p class="text-xs text-slate-400">Conversation: {{ $slot ?? 'hi' }}</p>

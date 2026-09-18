@@ -1,0 +1,1 @@
+<div class="flex gap-2"><input placeholder="Search knowledge items..." class="flex-1 rounded-lg border px-3 py-1.5 text-sm" /><x-button.search-button /></div>

@@ -1,0 +1,1 @@
+<button class="rounded-full bg-[#6366F1] text-white px-4 py-1 text-sm">Public</button>

@@ -1,0 +1,1 @@
+<button class="rounded bg-red-500 px-4 py-1 text-sm text-white">Logout</button>

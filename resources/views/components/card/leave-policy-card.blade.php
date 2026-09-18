@@ -1,0 +1,1 @@
+<div class="rounded-xl bg-[#F1F5F9] p-3 flex flex-col gap-2"><x-badge.hr-department-badge /><x-button.knowledge-question-button>annual leave</x-button><p class="text-xs text-slate-400">{{ $slot }}</p></div>
