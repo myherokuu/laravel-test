@@ -4,13 +4,13 @@
 _(none)_
 
 ## In Progress
-- [ ] T-001: Info PHP module — controller `InfoPhpController`, view `resources/views/infophp/index.blade.php`, web route `/infophp` — ASSIGNED to DEV (2026-09-19)
+_(none)_
 
 ## Review
 _(none)_
 
 ## Done
-_(none)_
+- [x] T-001: Info PHP module — controller `InfoPhpController`, view `resources/views/infophp/index.blade.php`, web route `/infophp` — DONE by DEV (2026-09-19)
 
 ## Blocked
 _(none)_

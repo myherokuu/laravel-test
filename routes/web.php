@@ -17,6 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/infophp', [\App\Http\Controllers\InfoPhpController::class, 'index'])->name('infophp.index');
+
 Route::get('/dashboard', function () {
     return redirect()->route('budi95.dashboard');
 })->middleware(['auth'])->name('dashboard');
