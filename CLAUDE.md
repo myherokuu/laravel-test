@@ -12,7 +12,10 @@ always given in your assignment from the Project Manager (PM).
    format `TIMESTAMP | STATE | MESSAGE`  (states: INIT, PENDING, ASSIGNED,
    IN_PROGRESS, DONE, FIXED, BLOCKED, REVIEW, CANCELLED). Never overwrite.
 6. Never set DONE without a matching commit.
-7. Never commit secrets or `.env` files.
+7. Keep `tasks/board.md` current: move your task to In Progress when you start
+   it and to Done (or Blocked) when you finish. Add a `- [ ] T-XXX:` row for any
+   new work you discover.
+8. Never commit secrets or `.env` files.
 
 ## Live status
 Agent statuses live in `.agents/*.status`, task board in `tasks/board.md`,
