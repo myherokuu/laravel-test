@@ -1,10 +1,10 @@
 # Task Board
 
 ## To Do
-- [ ] T-001: First task for this project
+_(none)_
 
 ## In Progress
-_(none)_
+- [ ] T-001: Info PHP module — controller `InfoPhpController`, view `resources/views/infophp/index.blade.php`, web route `/infophp` — ASSIGNED to DEV (2026-09-19)
 
 ## Review
 _(none)_

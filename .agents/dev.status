@@ -1,1 +1,2 @@
 2026-09-19 06:47 | INIT | agent ready, waiting for task
+2026-09-19 06:55 | ASSIGNED | T-001: Build Info PHP module. Create App\Http\Controllers\InfoPhpController with index() returning a view of PHP info (phpversion, PHP_OS, SAPI, loaded extensions, key ini settings). Create resources/views/infophp/index.blade.php. Register web route GET /infophp in routes/web.php. Keep it simple, follow existing controller/view style (Laravel 8). Commit with [DEV] prefix and report DONE.
